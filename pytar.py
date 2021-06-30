@@ -44,6 +44,7 @@ guitar.get_hat(x)
 
 import pygame
 import signal
+import time
 
 
 #-- INIT
@@ -265,17 +266,39 @@ while True:
     if e.type == pygame.JOYHATMOTION and e.value[1] != 0 and mode_toggle == GUITAR_MODE:
       strum_direction = e.value[1]
 
-      # play all the sounds
-      for input, attr in buttons.items():
-        if attr['state'] == True:
-          attr['sound'][UP].stop()
-          attr['sound'][DOWN].stop()
-          attr['sound'][strum_direction].play()
-          #attr['value'].stop()
-          #attr['value'].play()
-          fadeout = int((guitar.get_axis(3)+1)*1500)
-          if fadeout > 0:
-            attr['sound'][strum_direction].fadeout(3250-fadeout)
+      # play all the sounds, doing guitary things when using guitar
+      # experimenting with strumming emulation.  Will take out eventually
+      if strum_direction == DOWN and mode_toggle == GUITAR_MODE:
+        for input, attr in reversed(buttons.items()):
+          if attr['state'] == True:
+            attr['sound'][UP].stop()
+            attr['sound'][DOWN].stop()
+            attr['sound'][strum_direction].play()
+            fadeout = int((guitar.get_axis(3)+1)*1500)
+            if fadeout > 0:
+              attr['sound'][strum_direction].fadeout(3250-fadeout)
+            time.sleep(.1)
+
+      elif strum_direction == UP and mode_toggle == GUITAR_MODE:
+        for input, attr in buttons.items():
+          if attr['state'] == True:
+            attr['sound'][UP].stop()
+            attr['sound'][DOWN].stop()
+            attr['sound'][strum_direction].play()
+            fadeout = int((guitar.get_axis(3)+1)*1500)
+            if fadeout > 0:
+              attr['sound'][strum_direction].fadeout(3250-fadeout)
+            time.sleep(.1)
+
+      else:
+        for input, attr in buttons.items():
+          if attr['state'] == True:
+            attr['sound'][UP].stop()
+            attr['sound'][DOWN].stop()
+            attr['sound'][strum_direction].play()
+            fadeout = int((guitar.get_axis(3)+1)*1500)
+            if fadeout > 0:
+              attr['sound'][strum_direction].fadeout(3250-fadeout)
 
     if e.type == pygame.JOYBUTTONDOWN and e.button == XBUTTON:
       exit()

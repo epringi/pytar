@@ -11,6 +11,14 @@
   keytar instrument.  This could potentially be compatible with other 'guitar'
   devices, but current compatibility is only verified for RedOctane Guitar Hero X-plorer.
 
+  Controls
+  coloured keys: hold to select sound, can hold multiple
+  strum: play sounds
+  whammy: restricts sound fadeout
+  back/start: switch instrument mode (guitar or sampler)
+  dpad up/down: cycle through sound variants for the selected instrument
+  x: exit
+
 ---  Detected inputs:
 guitar.get_axis(x)
   axis 3: whammy bar
@@ -89,15 +97,19 @@ ORANGE = 4
 BACK = 6
 START = 7
 XBUTTON = 8
-UP = 1
-DOWN = -1
+
+UP = -1
+DOWN = 1
+
+GUITAR_MODE = 0
+SAMPLE_MODE = 1
 
 # contains two modes: guitar and sampler
 sounds = {
-  'guitar': [
-    # bass guitar [0]
+  GUITAR_MODE: [
+    # bass guitar
     {
-      # strum down
+      # strum up
       UP: {
         'green': pygame.mixer.Sound("samples/bass/bassE.wav"),
         'red': pygame.mixer.Sound("samples/bass/bassA.wav"),
@@ -105,7 +117,7 @@ sounds = {
         'blue': pygame.mixer.Sound("samples/bass/bassG.wav"),
         'orange': pygame.mixer.Sound("samples/bass/bassB.wav")
       },
-      # strum up
+      # strum down
       DOWN: {
         'green': pygame.mixer.Sound("samples/bass/bassA.wav"),
         'red': pygame.mixer.Sound("samples/bass/bassD.wav"),
@@ -114,9 +126,9 @@ sounds = {
         'orange': pygame.mixer.Sound("samples/bass/bassE.wav"),
       }
     },
-    # 6 string guitar [1]
+    # 6 string guitar
     {
-      # strum down
+      # strum up
       UP: {
         'green': pygame.mixer.Sound("samples/bass/bassG.wav"),
         'red': pygame.mixer.Sound("samples/bass/bassB.wav"),
@@ -124,7 +136,7 @@ sounds = {
         'blue': pygame.mixer.Sound("samples/bass/bassA.wav"),
         'orange': pygame.mixer.Sound("samples/bass/bassD.wav"),
       },
-      # strum up
+      # strum down
       DOWN: {
         'green': pygame.mixer.Sound("samples/bass/bassB.wav"),
         'red': pygame.mixer.Sound("samples/bass/bassE.wav"),
@@ -134,45 +146,54 @@ sounds = {
       }
     }
   ],
-  'sampler': []
+  SAMPLE_MODE: [
+    {
+      # strum up
+      UP: {
+        'green': pygame.mixer.Sound("samples/bass/bassG.wav"),
+        'red': pygame.mixer.Sound("samples/bass/bassB.wav"),
+        'yellow': pygame.mixer.Sound("samples/bass/bassE.wav"),
+        'blue': pygame.mixer.Sound("samples/bass/bassA.wav"),
+        'orange': pygame.mixer.Sound("samples/bass/bassD.wav"),
+      },
+      # strum down
+      DOWN: {
+        'green': pygame.mixer.Sound("samples/bass/bassB.wav"),
+        'red': pygame.mixer.Sound("samples/bass/bassE.wav"),
+        'yellow': pygame.mixer.Sound("samples/bass/bassA.wav"),
+        'blue': pygame.mixer.Sound("samples/bass/bassD.wav"),
+        'orange': pygame.mixer.Sound("samples/bass/bassG.wav"),
+      }
+    }
+  ]
 }
 
-# Mode "guitar" or "sampler"
-mode = "guitar"
+# toggle value changed with back and start buttons for guitar or sampler mode
+mode_toggle = GUITAR_MODE
 
-# toggle value changed with back and start buttons
-toggle = 0
+# variant variable to indicate which set of sounds to use
+variant = 0
 
 # State and sound info for the buttons
 buttons = {
   'green': {
     'state': False,
-    #'value': colours.green + "green" + colours.off
-    #'sound': { 1: sounds['enote'], -1: sounds['bnote'] }
     'sound': {}
   },
   'red': {
     'state': False,
-    #'value': colours.red + "red" + colours.off
-    #'sound': { 1: sounds['anote'], -1: sounds['enote'] }
     'sound': {}
   },
   'yellow': {
     'state': False,
-    #'value': colours.yellow + "yellow" + colours.off
-    #'sound': { 1: sounds['dnote'], -1: sounds['anote'] }
     'sound': {}
   },
   'blue': {
     'state': False,
-    #'value': colours.blue + "blue" + colours.off
-    #'sound': { 1: sounds['gnote'], -1: sounds['dnote'] }
     'sound': {}
   },
   'orange': {
     'state': False,
-    #'value': colours.orange + "orange" + colours.off
-    #'sound': { 1: sounds['bnote'], -1: sounds['gnote'] }
     'sound': {}
   }
 }
@@ -182,10 +203,9 @@ buttons = {
 
 # set the sounds for the buttons
 def set_sounds():
-  if mode == "guitar":
-    for button, values in buttons.items():
-      values['sound'][UP]=sounds['guitar'][toggle][UP][button]
-      values['sound'][DOWN]=sounds['guitar'][toggle][DOWN][button]
+  for button, values in buttons.items():
+    values['sound'][UP]=sounds[mode_toggle][variant][UP][button]
+    values['sound'][DOWN]=sounds[mode_toggle][variant][DOWN][button]
 
 # initialise the sounds for the buttons
 set_sounds()
@@ -198,47 +218,51 @@ while True:
       buttons['green']['state'] = False
     if e.type == pygame.JOYBUTTONDOWN and e.button == GREEN:
       buttons['green']['state'] = True
-      #print(colours.green + "green note active" + colours.off)
 
     if e.type == pygame.JOYBUTTONUP and e.button == RED:
       buttons['red']['state'] = False
     if e.type == pygame.JOYBUTTONDOWN and e.button == RED:
       buttons['red']['state'] = True
-      #print(colours.red + "red note active" + colours.off)
 
     if e.type == pygame.JOYBUTTONUP and e.button == YELLOW:
       buttons['yellow']['state'] = False
     if e.type == pygame.JOYBUTTONDOWN and e.button == YELLOW:
       buttons['yellow']['state'] = True
-      #print(colours.yellow + "yellow note active" + colours.off)
 
     if e.type == pygame.JOYBUTTONUP and e.button == BLUE:
       buttons['blue']['state'] = False
     if e.type == pygame.JOYBUTTONDOWN and e.button == BLUE:
       buttons['blue']['state'] = True
-      #print(colours.blue + "blue note active" + colours.off)
 
     if e.type == pygame.JOYBUTTONUP and e.button == ORANGE:
       buttons['orange']['state'] = False
     if e.type == pygame.JOYBUTTONDOWN and e.button == ORANGE:
       buttons['orange']['state'] = True
-      #print(colours.orange + "orange note active" + colours.off)
 
-    '''if e.type == pygame.JOYAXISMOTION and e.axis == 3 and e.value < -1.000030518509476:
-      buttons['whammy']['state'] = False
-    if e.type == pygame.JOYAXISMOTION and e.axis == 3 and e.value > -1.000030518509476:
-      buttons['whammy']['state'] = True
-      #print(colours.white + "Whammy - alter noise" + colours.off + str(e.value))'''
 
     # toggle the toggle if the toggle is toggled :|
     if e.type == pygame.JOYBUTTONDOWN and (e.button == BACK or e.button == START):
-      toggle ^= 1
-      set_sounds()
+      mode_toggle ^= 1
+
+    # cycle through the sound variants
+    if e.type == pygame.JOYHATMOTION and e.value[0] == UP:
+      variant = variant + 1
+    if e.type == pygame.JOYHATMOTION and e.value[0] == DOWN:
+      variant = variant - 1
+
+    # check if variant is out of range
+    if variant >= len(sounds[mode_toggle]):
+      variant = 0
+    elif variant < 0:
+      variant = len(sounds[mode_toggle])-1
+
+    # reset the sounds
+    set_sounds()
 
     # Strum action
     strum_direction = UP
 
-    if e.type == pygame.JOYHATMOTION and e.value[1] != 0 and mode == 'guitar':
+    if e.type == pygame.JOYHATMOTION and e.value[1] != 0 and mode_toggle == GUITAR_MODE:
       strum_direction = e.value[1]
 
       # play all the sounds

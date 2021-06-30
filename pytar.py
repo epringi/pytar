@@ -40,14 +40,12 @@ mixer.music.queue(file)
 mixer.music.play(4)'''
 
 sounds = {
-  enote = "enote.wav",
-  anote = "anote.wav",
-  dnote = "dnote.wav",
-  gnote = "gnote.wav",
-  bnote = "bnote.wav"
+  'enote': pygame.mixer.Sound("samples/bass/bassE.wav"),
+  'anote': pygame.mixer.Sound("samples/bass/bassA.wav"),
+  'dnote': pygame.mixer.Sound("samples/bass/bassD.wav"),
+  'gnote': pygame.mixer.Sound("samples/bass/bassG.wav"),
+  'bnote': pygame.mixer.Sound("samples/bass/bassB.wav")
 }
-
-
 
 # Get all the joysticks detected
 joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
@@ -87,30 +85,35 @@ guitar.get_hat(x)
 
 # State and sound info for the inputs
 inputs = {
+  'green': {
+    'state': False,
+    #'value': colours.green + "green" + colours.off
+    'value': sounds['enote']
+  },
   'red': {
     'state': False,
-    'value': colours.red + "red" + colours.off
-  },
-  'blue': {
-    'state': False,
-    'value': colours.blue + "blue" + colours.off
+    #'value': colours.red + "red" + colours.off
+    'value': sounds['anote']
   },
   'yellow': {
     'state': False,
-    'value': colours.yellow + "yellow" + colours.off
+    #'value': colours.yellow + "yellow" + colours.off
+    'value': sounds['dnote']
+  },
+  'blue': {
+    'state': False,
+    #'value': colours.blue + "blue" + colours.off
+    'value': sounds['gnote']
   },
   'orange': {
     'state': False,
-    'value': colours.orange + "orange" + colours.off
-  },
-  'green': {
-    'state': False,
-    'value': colours.green + "green" + colours.off
-  },
-  'whammy': {
-    'state': False,
-    'value': colours.white + "Whammy" + colours.off
+    #'value': colours.orange + "orange" + colours.off
+    'value': sounds['bnote']
   }
+  #'whammy': {
+  #  'state': False,
+  #  'value': colours.white + "Whammy" + colours.off
+  #}
 }
 
 while True:
@@ -145,19 +148,20 @@ while True:
       inputs['orange']['state'] = True
       #print(colours.orange + "orange note active" + colours.off)
 
-    if e.type == pygame.JOYAXISMOTION and e.axis == 3 and e.value < -1.000030518509476:
+    '''if e.type == pygame.JOYAXISMOTION and e.axis == 3 and e.value < -1.000030518509476:
       inputs['whammy']['state'] = False
     if e.type == pygame.JOYAXISMOTION and e.axis == 3 and e.value > -1.000030518509476:
       inputs['whammy']['state'] = True
-      #print(colours.white + "Whammy - alter noise" + colours.off + str(e.value))
+      #print(colours.white + "Whammy - alter noise" + colours.off + str(e.value))'''
 
     if e.type == pygame.JOYHATMOTION and e.value[1] != 0:
-      #print("strum - make noise")
-      sound=""
       for input, attr in inputs.items():
         if attr['state'] == True:
-          sound = sound + attr['value'] + " "
-      print(sound)
+          attr['value'].stop()
+          attr['value'].play()
+          fadeout = int((guitar.get_axis(3)+1)*1500)
+          if fadeout > 0:
+            attr['value'].fadeout(3250-fadeout)
 
     if e.type == pygame.JOYBUTTONDOWN and e.button == 8:
       exit()

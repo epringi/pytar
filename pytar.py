@@ -19,6 +19,9 @@
   dpad up/down: cycle through sound variants for the selected instrument
   x: exit
 
+? to set a sample on a key, hold key and cycle through samples then release to set that sample on that key
+? create trumpet type where multiple keys pressed == brand new note, like a trumpet
+
 ---  Detected inputs:
 guitar.get_axis(x)
   axis 3: whammy bar
@@ -148,22 +151,42 @@ sounds = {
     }
   ],
   SAMPLE_MODE: [
+    # linux sounds, single tone, melodic
     {
       # strum up
       UP: {
-        'green': pygame.mixer.Sound("samples/bass/bassG.wav"),
-        'red': pygame.mixer.Sound("samples/bass/bassB.wav"),
-        'yellow': pygame.mixer.Sound("samples/bass/bassE.wav"),
-        'blue': pygame.mixer.Sound("samples/bass/bassA.wav"),
-        'orange': pygame.mixer.Sound("samples/bass/bassD.wav"),
+        'green': pygame.mixer.Sound("samples/linux-sounds/single/linux-single-1.ogg"),
+        'red': pygame.mixer.Sound("samples/linux-sounds/single/linux-single-2.ogg"),
+        'yellow': pygame.mixer.Sound("samples/linux-sounds/single/linux-single-3.ogg"),
+        'blue': pygame.mixer.Sound("samples/linux-sounds/single/linux-single-4.ogg"),
+        'orange': pygame.mixer.Sound("samples/linux-sounds/single/linux-single-5.ogg"),
       },
       # strum down
       DOWN: {
-        'green': pygame.mixer.Sound("samples/bass/bassB.wav"),
-        'red': pygame.mixer.Sound("samples/bass/bassE.wav"),
-        'yellow': pygame.mixer.Sound("samples/bass/bassA.wav"),
-        'blue': pygame.mixer.Sound("samples/bass/bassD.wav"),
-        'orange': pygame.mixer.Sound("samples/bass/bassG.wav"),
+        'green': pygame.mixer.Sound("samples/linux-sounds/single/linux-single-6.ogg"),
+        'red': pygame.mixer.Sound("samples/linux-sounds/single/linux-single-7.ogg"),
+        'yellow': pygame.mixer.Sound("samples/linux-sounds/single/linux-single-8.ogg"),
+        'blue': pygame.mixer.Sound("samples/linux-sounds/single/linux-single-9.ogg"),
+        'orange': pygame.mixer.Sound("samples/linux-sounds/single/linux-single-10.ogg"),
+      }
+    },
+    # linux sounds, single tone, rando noises
+    {
+      # strum up
+      UP: {
+        'green': pygame.mixer.Sound("samples/linux-sounds/single/warning.oga"),
+        'red': pygame.mixer.Sound("samples/linux-sounds/single/removed.oga"),
+        'yellow': pygame.mixer.Sound("samples/linux-sounds/single/message.oga"),
+        'blue': pygame.mixer.Sound("samples/linux-sounds/single/drop.oga"),
+        'orange': pygame.mixer.Sound("samples/linux-sounds/single/bell.oga"),
+      },
+      # strum down
+      DOWN: {
+        'green': pygame.mixer.Sound("samples/linux-sounds/single/warning.oga"),
+        'red': pygame.mixer.Sound("samples/linux-sounds/single/removed.oga"),
+        'yellow': pygame.mixer.Sound("samples/linux-sounds/single/message.oga"),
+        'blue': pygame.mixer.Sound("samples/linux-sounds/single/drop.oga"),
+        'orange': pygame.mixer.Sound("samples/linux-sounds/single/bell.oga"),
       }
     }
   ]
@@ -263,7 +286,7 @@ while True:
     # Strum action
     strum_direction = UP
 
-    if e.type == pygame.JOYHATMOTION and e.value[1] != 0 and mode_toggle == GUITAR_MODE:
+    if e.type == pygame.JOYHATMOTION and e.value[1] != 0:
       strum_direction = e.value[1]
 
       # play all the sounds, doing guitary things when using guitar
